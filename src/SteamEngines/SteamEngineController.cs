@@ -23,9 +23,8 @@ public sealed class SteamEngineController
 	public InventoryBase Inventory => EngineInventory;
 	public ItemSlot FuelSlot => EngineInventory[0];
 	public ItemSlot WaterSlot => EngineInventory[1];
-
 	// Persisted / synced state
-	public double TemperatureC { get; private set; } = AmbientTemperatureC;
+	public double TemperatureC { get => Configuration.Everburn ? LimitTemperatureC : field; private set; } = AmbientTemperatureC;
 
 	// Config multiplier for fuel burn
 	private float FuelDurationScale = 1f;
@@ -343,6 +342,7 @@ public sealed class SteamEngineController
 		tree.SetFloat("workingFluidConsumptionLPerHour", WorkingFluidConsumptionLitresPerHour);
 		tree.SetBool("powerEngaged", PowerEngaged);
 		tree.SetInt("steamLiqKind", FeedbackLiquidKind);
+		tree.SetBool("everburn", Configuration.Everburn);
 	}
 	#endregion
 
@@ -889,7 +889,7 @@ public sealed class SteamEngineController
 
 	private bool TryStartBurningFromFuelSlot()
 	{
-		if (Host.API.Side != EnumAppSide.Server || IsBurning || FuelSlot.Empty) return false;
+		if (Host.API.Side != EnumAppSide.Server || IsBurning || FuelSlot.Empty || Configuration.Everburn) return false;
 
 		ItemStack fuelStack = FuelSlot.Itemstack;
 		var combustibleProperties = fuelStack?.Collectible?.CombustibleProps;

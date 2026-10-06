@@ -18,6 +18,7 @@ public readonly struct SteamEngineConfig
 	public readonly double AccelerationBlocksPerSecondSquaredPerHeatUnit;
 	public readonly double SpeedLimitBlocksPerSecond;
 	public readonly double AccelerationLimitBlocksPerSecondSquared;
+	public readonly bool Everburn;
 
 	public SteamEngineConfig
 	(
@@ -27,7 +28,8 @@ public readonly struct SteamEngineConfig
 		double rawPowerNewtonsPer100Celsius,
 		double accelerationNewtonsPer100Celsius,
 		double speedLimitBlocksPerSecond,
-		double accelerationLimitBlocksPerSecondSquared
+		double accelerationLimitBlocksPerSecondSquared,
+		bool everburn
 	)
 	{
 		MaxTemperatureCelsius								= maxTemperatureCelsius;
@@ -38,6 +40,7 @@ public readonly struct SteamEngineConfig
 		AccelerationBlocksPerSecondSquaredPerHeatUnit		= accelerationNewtonsPer100Celsius * 0.1;
 		SpeedLimitBlocksPerSecond							= NormalizeSpeedLimit(speedLimitBlocksPerSecond);
 		AccelerationLimitBlocksPerSecondSquared				= NormalizeAccelerationLimit(accelerationLimitBlocksPerSecondSquared);
+		Everburn = everburn;
 	}
 
 	public static SteamEngineConfig FromBlock(Block block)
@@ -49,6 +52,7 @@ public readonly struct SteamEngineConfig
 		double accelerationNewtonsPer100Celsius = 1;
 		double speedLimitBlocksPerSecond = DefaultSpeedLimitBlocksPerSecond;
 		double accelerationLimitBlocksPerSecondSquared = DefaultAccelerationLimitBlocksPerSecondSquared;
+		bool everburn = false;
 
 		if (block is BlockLiquidContainerBase liquidContainerBlock) { capacityLitres = liquidContainerBlock.CapacityLitres; }
 
@@ -61,9 +65,10 @@ public readonly struct SteamEngineConfig
 			accelerationNewtonsPer100Celsius			= steamEngineAttributes["AccelerationNPer100C"].AsDouble(accelerationNewtonsPer100Celsius);
 			speedLimitBlocksPerSecond					= steamEngineAttributes["SpeedLimitBPS"].AsDouble(speedLimitBlocksPerSecond);
 			accelerationLimitBlocksPerSecondSquared		= steamEngineAttributes["AccelerationLimitSquaredBPS"].AsDouble(accelerationLimitBlocksPerSecondSquared);
+			everburn									= steamEngineAttributes["Everburn"].AsBool(everburn);
 		}
 
-		return new SteamEngineConfig(maxTemperatureCelsius, capacityLitres, workingFluidConsumptionLitresPerHour, rawPowerNewtonsPer100Celsius, accelerationNewtonsPer100Celsius, speedLimitBlocksPerSecond, accelerationLimitBlocksPerSecondSquared);
+		return new SteamEngineConfig(maxTemperatureCelsius, capacityLitres, workingFluidConsumptionLitresPerHour, rawPowerNewtonsPer100Celsius, accelerationNewtonsPer100Celsius, speedLimitBlocksPerSecond, accelerationLimitBlocksPerSecondSquared, everburn);
 	}
 
 	public static SteamEngineConfig FromJson(JsonObject? attributes)
@@ -76,8 +81,9 @@ public readonly struct SteamEngineConfig
 		double accelerationNewtonsPer100Celsius = 1;
 		double speedLimitBlocksPerSecond = DefaultSpeedLimitBlocksPerSecond;
 		double accelerationLimitBlocksPerSecondSquared = DefaultAccelerationLimitBlocksPerSecondSquared;
+        bool everburn = false;
 
-		if (attributes != null && attributes.Exists)
+        if (attributes != null && attributes.Exists)
 		{
 			capacityLitres = attributes["capacityLitres"].AsDouble(capacityLitres);
 
@@ -90,10 +96,11 @@ public readonly struct SteamEngineConfig
 				accelerationNewtonsPer100Celsius			= steamEngineAttributes["AccelerationNPer100C"].AsDouble(accelerationNewtonsPer100Celsius);
 				speedLimitBlocksPerSecond					= steamEngineAttributes["SpeedLimitBPS"].AsDouble(speedLimitBlocksPerSecond);
 				accelerationLimitBlocksPerSecondSquared		= steamEngineAttributes["AccelerationLimitSquaredBPS"].AsDouble(accelerationLimitBlocksPerSecondSquared);
-			}
+                everburn									= steamEngineAttributes["Everburn"].AsBool(everburn);
+            }
 		}
 
-		return new SteamEngineConfig(maxTemperatureCelsius, capacityLitres, workingFluidConsumptionLitresPerHour, rawPowerNewtonsPer100Celsius, accelerationNewtonsPer100Celsius, speedLimitBlocksPerSecond, accelerationLimitBlocksPerSecondSquared);
+		return new SteamEngineConfig(maxTemperatureCelsius, capacityLitres, workingFluidConsumptionLitresPerHour, rawPowerNewtonsPer100Celsius, accelerationNewtonsPer100Celsius, speedLimitBlocksPerSecond, accelerationLimitBlocksPerSecondSquared, everburn);
 	}
 
 	private static double NormalizeSpeedLimit(double value)

@@ -557,6 +557,7 @@ public sealed class EngineControlUI : GuiDialogGeneric
 		bool isBurning							= remainingFuelBurnTimeSeconds > 0f && maximumFuelBurnTimeSeconds > 0f;
 		bool canIgniteFuel						= Attributes.GetBool("canIgniteFuel", false);
 		float engineMaxTemperatureC				= Attributes.GetFloat("engineMaxTemperatureC", 0f);
+		bool everburning						= Attributes.GetBool("everburn", false);
 
 		bool hasFuel  = Inventory != null && Inventory.Count > 0 && !Inventory[0].Empty;
 		bool hasFluid = Inventory != null && Inventory.Count > 1 && !Inventory[1].Empty;
@@ -568,7 +569,7 @@ public sealed class EngineControlUI : GuiDialogGeneric
 		string title	= Lang.Get("yangtransport:steamenginewarn-normal-title");
 		string desc		= Lang.Get("yangtransport:steamenginewarn-normal-desc");
 
-		if (!isBurning) // Engine ready for operation, but not lit
+		if (!isBurning && !everburning) // Engine ready for operation, but not lit
 		{
 			title	= Lang.Get("yangtransport:steamenginewarn-unlit-title");
 			desc	= Lang.Get("yangtransport:steamenginewarn-unlit-desc");
@@ -580,7 +581,7 @@ public sealed class EngineControlUI : GuiDialogGeneric
 			desc	= Lang.Get("yangtransport:steamenginewarn-missingfluid-desc");
 		}
 
-		if (!hasFuel) // No fuel
+		if (!hasFuel && !everburning) // No fuel
 		{
 			title	= Lang.Get("yangtransport:steamenginewarn-missingfuel-title");
 			desc	= Lang.Get("yangtransport:steamenginewarn-missingfuel-desc");
